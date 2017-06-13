@@ -1,0 +1,3 @@
+<imports>
+  <package name="process_manual_txns" path="process_manual_txns\Import" />
+</imports>

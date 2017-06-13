@@ -1,0 +1,137 @@
+<!-- (c) Copyright by Aras Corporation, 2004-2009. -->
+<html>
+<head>
+<title>Process Manual Transactions</title>
+<script type="text/javascript" src="../javascript/soap_object.js"></script>
+<script type="text/javascript">
+  var aras = dialogArguments.aras;
+  var inn = aras.newIOMInnovator();
+
+  var pcent = 0;
+  var processed_txns = 0;
+  var do_continue = true;
+
+  var async_controller = new SoapController(endProcessingCycle);
+
+  onload = function() {
+    setTimeout("startProcessingCycle()", 1);
+  }
+
+  function startProcessingCycle() {
+    aras.soapSend("ApplyMethod", "<Item type='Method' action='processReplicationTxns_Server'/>", undefined, undefined, async_controller);
+  }
+
+  function endProcessingCycle(soap_result) {
+    var result = inn.newItem();
+    result.loadAML(soap_result.getResult().xml)
+    if (result.node != null) {
+      processed_txns += result.getAttribute("processed") * 1;
+      var need_processing = result.getAttribute("need_processing") * 1;
+      var locked_by_others = result.getAttribute("locked_by_others") * 1;
+
+      if (processed_txns == 0)
+      {
+        if (need_processing - locked_by_others == 0)
+        {
+          pcent = 100;
+        }
+        else
+        {
+          // This means that there are still some transactions to process that could be processed as their
+          // files are not locked by someone else, but by some reason none of them were processed in this
+          // processing cycle. Most probably this is not very realistic case but in theory it might occur.
+          // In this case pcent is not changed but it might be a good idea to add some indication in UI
+          // that the processing cycle done nothing, so user might consider to cancel the processing (not
+          // done here!).
+        }
+      }
+      else
+      {
+        pcent = processed_txns / (processed_txns + need_processing - locked_by_others) * 100;
+      }
+    }
+    else {
+      pcent = 100;
+    }
+
+    if (!do_continue)
+      setCloseButton();
+
+    pcent = Math.floor(pcent);
+    under_text.innerHTML = pcent + "%";
+    if (pcent == 100) {
+      not_done.style.display = "none";
+      setCloseButton();
+    }
+    else {
+      not_done.width = (100 - pcent) + "%";
+    }
+    done.width = pcent + "%";
+
+    if (pcent < 100 && do_continue)
+      setTimeout("startProcessingCycle()", 1);
+  }
+
+  function setCloseButton() {
+    button.disabled = false;
+    button.value = "Close";
+    button.style.background = "#cccccc";
+    button.onclick = closeDialog;
+    if (do_continue) {
+      dtitle.innerHTML = "Finished processing";
+    }
+    else {
+      dtitle.style.color = "#d21a1a";
+      dtitle.innerHTML = "Processing stopped by user";
+    }
+  }
+
+  function cancelProcessing() {
+    do_continue = false;
+    dtitle.innerHTML = "Stopping the processing ...";
+    button.disabled = true;
+  }
+
+  function closeDialog() {
+    returnValue = null;
+    window.close();
+    return true;
+  }
+
+</script>
+
+</head>
+
+<body>
+    <table style="width:100%;">
+      <tr>
+        <td colspan="4" style="padding-left:15px;padding-right:15px;padding-top:10px; padding-bottom:20px; vertical-align:text-top; text-align: center; font-weight: bold; font-size: medium;" >
+          <label id="dtitle">Process manual transactions ...</label>
+        </td>
+      </tr>
+      <tr>
+        <td width="30px">&nbsp;</td>
+        <td id="done" style="background: blue; height: 20px;"></td>
+        <td id="not_done" style="background: cyan; height: 20px;" width="100%"></td>
+        <td width="30px">&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan="4" style="padding-top:10px; vertical-align: text-bottom; text-align: center">
+          <label id="under_text" style="font-size:x-small">0%</label>
+        </td>
+      </tr>
+      <tr>
+        <td width="30px">&nbsp;</td>
+        <td colspan="2" align="center">
+          <hr />
+        </td>
+        <td width="30px">&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan="4" style="vertical-align: text-bottom; text-align: center">
+          <input id="button" type="button" style="width: 93px; background:#ff8800;" value="Cancel" onclick="cancelProcessing();"/>
+        </td>
+      </tr>
+    </table>
+</body>
+</html>

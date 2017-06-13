@@ -1,0 +1,15 @@
+﻿<AML>
+ <Item type="Action" id="C9911033519744C2B5423E656248C025" action="add">
+  <classification>/*</classification>
+  <item_query></item_query>
+  <location>client</location>
+  <method keyed_name="processReplicatonTxns_Client" type="Method">
+   <Item type="Method" action="get" select="id">
+    <name>processReplicatonTxns_Client</name>
+   </Item>
+  </method>
+  <name>Execute Manual Transactions</name>
+  <target>none</target>
+  <type>itemtype</type>
+ </Item>
+</AML>

@@ -1,0 +1,17 @@
+﻿<AML>
+ <Item type="Method" id="DC6DF412B71F4541A9EF310D4CFD937D" action="add">
+  <classification>/*</classification>
+  <comments>Process manual transaction from the replication queue</comments>
+  <execution_allowed_to keyed_name="World" type="Identity">A73B655731924CD0B027E4F4D5FCC0A9</execution_allowed_to>
+  <method_code><![CDATA[
+var dargs = new Object();
+dargs["aras"] = top.aras;
+
+// It's assumed that file "processReplicationTxns.html" resides
+// in the Innovator/Client/scripts directory on server.
+var result = showModalDialog("processReplicationTxns.html", dargs, "dialogHeight:180px; dialogWidth:650px; center:yes; resizable:no; scroll:no; status:no; help:no;");
+]]></method_code>
+  <method_type>JavaScript</method_type>
+  <name>processReplicatonTxns_Client</name>
+ </Item>
+</AML>

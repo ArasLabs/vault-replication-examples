@@ -1,0 +1,8 @@
+<AML>
+   <Item type="Item Action" id="97EF6410189A40C3A4EE3FCE861B5319" action="add">
+    <classification>/*</classification>
+    <related_id keyed_name="Execute Manual Transactions" type="Action">C9911033519744C2B5423E656248C025</related_id>
+    <sort_order>128</sort_order>
+    <source_id keyed_name="ReplicationTxn" type="ItemType" name="ReplicationTxn">2DAC2B407B0043A692905CF6A94296A8</source_id>
+   </Item>
+</AML>
